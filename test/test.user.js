@@ -6,7 +6,7 @@
 // @author       Arathi of Nebnizilla
 // @match        https://telegra.ph/*
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
-// @require      http://127.0.0.1:5173/dist/commons.umd.js?t=230324-1521
+// @require      http://127.0.0.1:5173/dist/commons.umd.js?t=230326-2300
 // @grant        unsafeWindow
 // @grant        GM_addStyle
 // @grant        GM_listValues
@@ -19,7 +19,8 @@
 const {
     Logger,
     Config,
-    Aria2Client
+    Aria2Client,
+    DynamicInjector,
 } = TmUsCommons
 
 function loggetTests() {
@@ -56,8 +57,19 @@ async function aria2Tests() {
     logger.info("获取版本信息：", version)
 }
 
+async function injectTests() {
+    let logger = new Logger()
+    let injector = new DynamicInjector()
+    injector.inject("vue", "3.2", "/dist/vue.global.prod.js", (duration) => {
+        if (typeof Vue != 'undefined') {
+            logger.info("Vue %s 加载成功，耗时：%d ms", Vue.version, duration);
+            return Vue
+        }
+    })
+}
+
 async function main() {
-    aria2Tests()
+    injectTests()
 }
 
 main()
