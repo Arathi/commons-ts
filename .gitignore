@@ -8,7 +8,6 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
-dist
 dist-ssr
 *.local
 
@@ -25,3 +24,8 @@ dist-ssr
 
 # lock
 pnpm-lock.yaml
+
+# dist
+dist/*
+!dist/commons.umd.js
+!dist/commons.umd.js.map
