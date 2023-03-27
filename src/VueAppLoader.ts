@@ -8,6 +8,8 @@ interface VueAppLoaderOptions {
     vueVersion: string | null;
     elementVersion: string | null;
     vueOptions: object | null;
+    provides: object | null;
+    plugins: object[]
 }
 
 let defaultOptions = {
@@ -17,6 +19,8 @@ let defaultOptions = {
     vueVersion: "3.2",
     elementVersion: "2.3",
     vueOptions: {},
+    provides: {},
+    plugins: []
 } as VueAppLoaderOptions;
 
 export default class VueAppLoader {
@@ -80,7 +84,7 @@ export default class VueAppLoader {
                 return null;
             });
             this.injector.inject("element-plus", options.elementVersion, "/dist/index.css");
-    
+
             // step 5 创建vueApp
             let app = vue.createApp(options.vueOptions);
             if (element != null) {
@@ -88,6 +92,23 @@ export default class VueAppLoader {
                 // @ts-ignore
                 app.provide("$message", element.ElMessage);
             }
+
+            // step 6 加入plugins
+            for (let plugin of options.plugins) {
+                app.use(plugin)
+            }
+
+            // step 7 加入provide
+            for (let key in options.provides) {
+                if (key.startsWith("$")) {
+                    // @ts-ignore
+                    let provide = options.provides[key];
+                    this.logger.info("正在注入provide：%s = ", key, provide);
+                    app.provide(key, provide);
+                }
+            }
+
+            // step 8 挂载
             app.mount(`#${options.mountPointId}`);
 
             return app;

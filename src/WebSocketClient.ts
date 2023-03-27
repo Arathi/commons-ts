@@ -20,28 +20,35 @@ export default class WebSocketClient {
     }
 
     createWebSocket() {
+        this.logger.info("正在创建WebSocket");
         let ws = new WebSocket(this.url);
         this.addWebSocketListeners(ws);
+        this.logger.info("WebSocket创建成功：", ws);
         this.webSocket = ws;
     }
 
     addWebSocketListeners(ws: WebSocket) {
+        this.logger.info("正在绑定WebSocket事件监听");
         let self = this;
         ws.onopen = (event) => {
             self.connected = true;
             self.onOpen(event);
         };
+        this.logger.debug("open事件绑定完成");
         ws.onmessage = (msgEvent: MessageEvent) => {
             self.onMessage(msgEvent);
         };
+        this.logger.debug("message事件绑定完成");
         ws.onclose = (closeEvent: CloseEvent) => {
             self.connected = false;
             self.onClose(closeEvent);
         };
+        this.logger.debug("close事件绑定完成");
         ws.onerror = (event: Event) => {
             self.connected = false;
             self.onError(event);
         };
+        this.logger.debug("error事件绑定完成");
     }
 
     send(req: string) : boolean {

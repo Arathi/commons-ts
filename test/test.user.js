@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name         TmUsCommons-dev
 // @namespace    http://tampermonkey.net/
-// @version      0.10.0
+// @version      0.11.1
 // @description  try to take over the world!
 // @author       Arathi of Nebnizilla
 // @match        https://telegra.ph/*
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
-// @require      http://127.0.0.1:5173/dist/commons.umd.js?t=230327-1400
+// @require      http://127.0.0.1:5173/dist/commons.umd.js?t=230327-1500
 // @grant        unsafeWindow
 // @grant        GM_addStyle
 // @grant        GM_listValues
@@ -21,7 +21,7 @@ const {
     Config,
     Aria2Client,
     DynamicInjector,
-    VueAppLoader
+    VueAppLoader,
 } = TmUsCommons;
 
 function loggetTests() {
@@ -107,7 +107,6 @@ let appOptions = {
 <el-button @click="countUp">INC</el-button>
 `,
     data() { return {
-        logger: new Logger("test-app"),
         counter: 0
     }},
     methods: {
@@ -121,7 +120,10 @@ let appOptions = {
         }
     },
     mounted() {
-        this.logger.info("测试应用已挂载成功");
+        this.$logger.info("测试应用已挂载成功");
+        this.$aria2.getVersion().then((resp) => {
+            this.$logger.info("aria2版本获取成功：", resp);
+        });
     }
 };
 
@@ -135,23 +137,42 @@ div#test-app {
 
 async function loaderTest() {
     let logger = new Logger("loader-tests");
+    let loggerPlugin = {
+        install(app) {
+            app.config.globalProperties.$logger = logger;
+        }
+    };
+
+    let config = new Config();
+    let aria2Config = config.getValue("aria2");
+    let aria2 = new Aria2Client(aria2Config);
+    let aria2Plugin = {
+        install(app) {
+            app.config.globalProperties.$aria2 = aria2;
+        }
+    }
+
     let loader = new VueAppLoader({
         mountPointId: "test-app",
         html: null,
         styles: styles,
         vueVersion: "3.2.47",
         elementVersion: "2.3.1",
-        vueOptions: appOptions
+        vueOptions: appOptions,
+        plugins: [
+            loggerPlugin,
+            aria2Plugin
+        ]
     });
     let app = await loader.load();
     logger.info("Vue App 加载完成：", app);
 }
 
 async function main() {
-    loggetTests();
-    configTests();
-    aria2Tests();
-    injectTests();
+    // loggetTests();
+    // configTests();
+    // aria2Tests();
+    // injectTests();
     loaderTest();
 }
 

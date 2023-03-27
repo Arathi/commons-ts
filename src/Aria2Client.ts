@@ -35,16 +35,21 @@ export class Aria2Client extends JsonRpcWebSocketClient {
         return (this.token != null && this.token.trim() != "") ? `token:${this.token}` : null
     }
 
+    reconnect(url?: string, token?: string) {
+        if (url != null) {
+            this.url = url;
+        }
+        if (token != null) {
+            this.token = token;
+        }
+        this.createWebSocket();
+    }
+
     generateParams() : any[] {
         let params = []
         let secret = this.getSecret()
         if (secret != null) params.push(secret)
         return params
-    }
-
-    static Version = class {
-        enabledFeatures: string[] = [];
-        version: string = "";
     }
 
     getVersion() : Promise<Aria2Version> {
