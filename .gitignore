@@ -29,3 +29,4 @@ pnpm-lock.yaml
 dist/*
 !dist/commons.umd.js
 !dist/commons.umd.js.map
+!dist/*.d.ts

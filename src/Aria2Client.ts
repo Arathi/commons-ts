@@ -1,3 +1,7 @@
+import { 
+    JsonRpcRequest as Request,
+    // JsonRpcResponse as Response
+} from "./JsonRpcProtocol";
 import JsonRpcWebSocketClient from "./JsonRpcWebSocketClient";
 
 interface Aria2ClientOptions {
@@ -18,6 +22,7 @@ let defaultOptions = {
 
 export class Aria2Client extends JsonRpcWebSocketClient {
     token?: string | null;
+    eventTarget: EventTarget;
 
     constructor(options?: object) {
         let mergedOptions = {...defaultOptions, ...options};
@@ -29,8 +34,19 @@ export class Aria2Client extends JsonRpcWebSocketClient {
         );
 
         this.token = mergedOptions.token;
+        this.eventTarget = new EventTarget();
     }
 
+    addEventListener(
+        type: string, 
+        callback: EventListenerOrEventListenerObject | null, 
+        options?: AddEventListenerOptions | boolean
+    ) {
+        this.eventTarget.addEventListener(type, callback, options);
+    }
+
+    on = this.addEventListener;
+    
     getSecret() : string | null {
         return (this.token != null && this.token.trim() != "") ? `token:${this.token}` : null
     }
@@ -51,6 +67,56 @@ export class Aria2Client extends JsonRpcWebSocketClient {
         if (secret != null) params.push(secret)
         return params
     }
+
+    handleRequest(req: Request) {
+        super.handleRequest(req);
+
+        let gid: string|null = null;
+        let eventType: string|null = null;
+        switch (req.method) {
+            case "onDownloadStart":
+                eventType = "downloadStart";
+                gid = req.params[0].gid;
+                break;
+            case "onDownloadPause":
+                eventType = "downloadPause";
+                gid = req.params[0].gid;
+                break;
+            case "onDownloadStop":
+                eventType = "downloadStop";
+                gid = req.params[0].gid;
+                break;
+            case "onDownloadComplete":
+                eventType = "downloadComplete";
+                gid = req.params[0].gid;
+                break;
+            case "onDownloadError":
+                eventType = "downloadError";
+                gid = req.params[0].gid;
+                break;
+        }
+        if (eventType != null && gid != null) {
+            let event = new CustomEvent(eventType, {
+                detail: gid
+            });
+            this.eventTarget.dispatchEvent(event);
+        }
+    }
+
+    // handleResponse(resp: Response) {
+    //     super.handleResponse(resp);
+    //     let req = this.requests.get(resp.id!!);
+    //     if (req == null) return;
+    //     
+    //     let eventType: string|null = null;
+    //     let detail: any = null;
+    //     
+    //     switch (req.method) {
+    //         case "aria2.tellStatus":
+    //             eventType = "statusUpdate";
+    //             detail = resp.result;
+    //     }
+    // }
 
     getVersion() : Promise<Aria2Version> {
         let method = "aria2.getVersion";

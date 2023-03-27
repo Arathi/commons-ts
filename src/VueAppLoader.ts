@@ -34,7 +34,7 @@ export default class VueAppLoader {
         this.options = { ...defaultOptions, ...options };
     }
     
-    async load(opts?: object) {
+    async load(opts?: object): Promise<any> {
         // step 0 重建options
         let options = (opts != null) ?
             { ...defaultOptions, ...opts } :
@@ -114,5 +114,7 @@ export default class VueAppLoader {
             return app;
         }
         while (false);
+
+        return null;
     }
 }
