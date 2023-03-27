@@ -6,10 +6,10 @@ import DynamicInjector from './DynamicInjector';
 import VueAppLoader from './VueAppLoader';
 
 export {
-    Logger,
-    Config,
+    Logger, 
+    Config, 
     Aria2Client, 
     Task, TaskGroup, DownloadManager, 
-    DynamicInjector,
+    DynamicInjector, 
     VueAppLoader
 }
