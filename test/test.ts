@@ -1,30 +1,10 @@
-// ==UserScript==
-// @name         TmUsCommons-dev
-// @namespace    http://tampermonkey.net/
-// @version      0.10.0
-// @description  try to take over the world!
-// @author       Arathi of Nebnizilla
-// @match        https://telegra.ph/*
-// @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
-// @require      http://127.0.0.1:5173/dist/commons.umd.js?t=230327-1400
-// @grant        unsafeWindow
-// @grant        GM_addStyle
-// @grant        GM_listValues
-// @grant        GM_getValue
-// @grant        GM_setValue
-// @grant        GM_deleteValue
-// @grant        GM_xmlhttpRequest
-// ==/UserScript==
+import Logger from '../src/Logger';
+import Config from '../src/Config';
+import { Aria2Client, Aria2Version } from '../src/Aria2Client';
+import DynamicInjector from '../src/DynamicInjector';
+import VueAppLoader from '../src/VueAppLoader';
 
-const {
-    Logger,
-    Config,
-    Aria2Client,
-    DynamicInjector,
-    VueAppLoader
-} = TmUsCommons;
-
-function loggetTests() {
+function loggerTests() {
     let logger = new Logger("logger-tests");
     logger.debug("无参数【调试】级");
     logger.debug("有参数【%s】级：%d", "调试", 1);
@@ -41,33 +21,26 @@ function loggetTests() {
     logger.error("无参数【错误】级");
     logger.error("有参数【%s】级：%d", "错误", 5);
     logger.error("过量参数【%s】级：", "错误", { level: 5 });
-
-    let msgLogger = new Logger("msgLog")
-    msgLogger.trace("S->C CONNECT")
 }
 
-function configTests() {
+async function configTests() {
     let logger = new Logger("config-tests");
     let config = new Config();
-
+    
     // #region 同步
-    config.initValueIfNotExists("aria2", {
-        "url": "ws://127.0.0.1:6800/jsonrpc",
-        "token": "47bfbcf3"
-    });
     config.initValueIfNotExists("config-tests", {
         "manga": "E:\\Downloads\\Comics",
         "cosplay": "E:\\Downloads\\Cosplay"
     });
-
-    let cfgTest = config.getValue("config-tests");
+    
+    let cfgTest: any = config.getValue("config-tests");
     logger.info("manga: %s", cfgTest.manga);
-
+    
     cfgTest.cosplay = "E:\\Downloads\\CosplayCopy";
     config.setValue("config-tests-copy", cfgTest);
-
+    
     config.deleteValue("config-tests");
-
+    
     let keys = config.listValues();
     logger.info("keys: ", keys);
     // #endregion
@@ -77,29 +50,31 @@ function configTests() {
 }
 
 async function aria2Tests() {
-    let logger = new Logger();
-    let config = new Config();
-    let options = config.getValue("aria2", {});
-    let aria2 = new Aria2Client(options);
-    let connectTimeCost = await aria2.waitForOpen();
-    logger.info("连接耗时%dms", connectTimeCost);
-    let version = await aria2.getVersion();
-    logger.info("获取版本信息：", version);
+    let logger = new Logger("config-tests");
+    let aria2 = new Aria2Client({
+        url: "ws://127.0.0.1:6800/jsonrpc",
+        msgIdType: "number",
+        token: "47bfbcf3",
+        timeout: 30000,
+        interval: 10
+    });
+    let resp = await aria2.getVersion();
+    logger.info("aria2.getVersion 响应报文：", resp);
 }
 
 async function injectTests() {
-    let logger = new Logger();
     let injector = new DynamicInjector();
-
-    let lodash = await injector.inject("lodash", "4.17.21", "/lodash.js", (duration) => {
+    injector.inject("lodash", "4.17.21", "/lodash.js", (duration) => {
+        // @ts-ignore
         if (typeof _ != 'undefined') {
+            // @ts-ignore
             return _
         }
         return null;
     });
-    logger.info("lodash version: ", lodash.VERSION);
 }
 
+// #region VueAppLoader
 let appOptions = {
     template: `
 <el-button @click="countDown">DEC</el-button>
@@ -126,7 +101,7 @@ let appOptions = {
 };
 
 let styles = `
-div#test-app {
+#test-app {
     position: fixed;
     top: 10px;
     left: 10px;
@@ -138,7 +113,7 @@ async function loaderTest() {
     let loader = new VueAppLoader({
         mountPointId: "test-app",
         html: null,
-        styles: styles,
+        style: styles,
         vueVersion: "3.2.47",
         elementVersion: "2.3.1",
         vueOptions: appOptions
@@ -146,12 +121,13 @@ async function loaderTest() {
     let app = await loader.load();
     logger.info("Vue App 加载完成：", app);
 }
+// #endregion
 
 async function main() {
-    loggetTests();
-    configTests();
-    aria2Tests();
-    injectTests();
+    // loggerTests();
+    // configTests();
+    // aria2Tests();
+    // injectTests();
     loaderTest();
 }
 

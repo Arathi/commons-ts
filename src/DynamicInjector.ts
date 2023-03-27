@@ -33,7 +33,7 @@ export default class DynamicInjector {
             let element = document.createElement("link");
             element.rel = "stylesheet";
             element.href = url;
-            document.body.appendChild(element);
+            document.head.appendChild(element);
             this.logger.info(`开始注入css: ${url}`);
         }
         else {
