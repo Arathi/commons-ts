@@ -54,6 +54,7 @@ export default class JsonRpcWebSocketClient extends WebSocketClient {
             return
         }
 
+        logger.info("向%s发送请求报文：", this.url, req);
         let json = JSON.stringify(req);
         this.requests.set(req.id, req);
         super.send(json);
