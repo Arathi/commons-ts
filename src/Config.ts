@@ -5,7 +5,6 @@ let logger = Logger.getLogger("config");
 export default class Config {
     private static instance: Config;
 
-    // logger: Logger;
     useLocalStorage: boolean;
 
     constructor(useLocalStorage: boolean = false) {

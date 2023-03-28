@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name         TmUsCommons-dev
 // @namespace    http://tampermonkey.net/
-// @version      0.13.0
+// @version      0.13.1
 // @description  try to take over the world!
 // @author       Arathi of Nebnizilla
 // @match        https://telegra.ph/*
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
-// @require      http://127.0.0.1:30327/dist/commons.umd.js?t=230328-1000
+// @require      http://127.0.0.1:30327/dist/commons.umd.js?t=230328-1001
 // @grant        unsafeWindow
 // @grant        GM_addStyle
 // @grant        GM_listValues
@@ -169,10 +169,10 @@ async function loaderTest() {
 }
 
 async function main() {
-    // loggetTests();
-    // configTests();
-    // aria2Tests();
-    // injectTests();
+    loggetTests();
+    configTests();
+    aria2Tests();
+    injectTests();
     loaderTest();
 }
 

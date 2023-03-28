@@ -45,7 +45,6 @@ export class TaskGroup {
 let logger = Logger.getLogger("download-mgr");
 
 export class DownloadManager {
-    // logger: Logger;
     aria2: Aria2Client;
 
     constructor(url: string, token?: string) {

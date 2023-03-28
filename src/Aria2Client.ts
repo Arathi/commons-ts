@@ -103,21 +103,6 @@ export class Aria2Client extends JsonRpcWebSocketClient {
         }
     }
 
-    // handleResponse(resp: Response) {
-    //     super.handleResponse(resp);
-    //     let req = this.requests.get(resp.id!!);
-    //     if (req == null) return;
-    //     
-    //     let eventType: string|null = null;
-    //     let detail: any = null;
-    //     
-    //     switch (req.method) {
-    //         case "aria2.tellStatus":
-    //             eventType = "statusUpdate";
-    //             detail = resp.result;
-    //     }
-    // }
-
     getVersion() : Promise<Aria2Version> {
         let method = "aria2.getVersion";
 

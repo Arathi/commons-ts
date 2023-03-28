@@ -75,7 +75,6 @@ export default class DynamicInjector {
     }
 
     injectFromCDN<T>(cdn: string, pkg: string, version: string, path: string, timeout: number, checkLoaded?: (payload?: any) => T|null) : Promise<T> {
-        // https://cdn.jsdelivr.net/npm/vue@3.2/dist/vue.global.prod.js
         let url = `${cdn}${pkg}@${version}${path}`;
         return this.injectByUrl(url, timeout, checkLoaded);
     }
