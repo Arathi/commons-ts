@@ -134,7 +134,7 @@ export class Aria2Client extends JsonRpcWebSocketClient {
         let self = this;
         return new Promise<string>((resolve, reject) => {
             self.waitForResponse(msgId, reject, (resp) => {
-                let result = resp.result.gid as string;
+                let result = resp.result as string;
                 resolve(result);
             });
         });
