@@ -1,5 +1,4 @@
 import DynamicInjector from './DynamicInjector';
-import Logger from './Logger';
 interface VueAppLoaderOptions {
     mountPointId: string;
     html: string | null;
@@ -11,7 +10,6 @@ interface VueAppLoaderOptions {
     plugins: object[];
 }
 export default class VueAppLoader {
-    logger: Logger;
     injector: DynamicInjector;
     options: VueAppLoaderOptions;
     constructor(options: object);

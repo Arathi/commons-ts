@@ -1,16 +1,27 @@
 import Logger from "./Logger";
 
+let logger = Logger.getLogger("dynamic-injector");
+
 export default class DynamicInjector {
-    logger: Logger;
+    private static instance: DynamicInjector;
+
     cdn: string = "https://cdn.jsdelivr.net/npm/";
     timeout: number = 5000;
     checkInterval: number = 1;
 
     constructor(cdn?: string, timeout?: number, checkInterval?: number) {
-        this.logger = new Logger("dynamic-injector");
+        logger = new Logger("dynamic-injector");
         if (cdn != null) this.cdn = cdn;
         if (timeout != null) this.timeout = timeout;
         if (checkInterval != null) this.checkInterval = checkInterval;
+    }
+
+    public static getInstance() {
+        if (!DynamicInjector.instance) {
+            logger.info("创建DynamicInjector实例");
+            DynamicInjector.instance = new DynamicInjector();
+        }
+        return DynamicInjector.instance;
     }
 
     getExtName(urlStr: string) {
@@ -27,17 +38,17 @@ export default class DynamicInjector {
             element.type = "application/javascript";
             element.src = url;
             document.body.appendChild(element);
-            this.logger.info(`开始注入js: ${url}`);
+            logger.info(`开始注入js: ${url}`);
         }
         else if (extName == ".css") {
             let element = document.createElement("link");
             element.rel = "stylesheet";
             element.href = url;
             document.head.appendChild(element);
-            this.logger.info(`开始注入css: ${url}`);
+            logger.info(`开始注入css: ${url}`);
         }
         else {
-            this.logger.info(`无法注入元素的文件类型: ${extName}`);
+            logger.info(`无法注入元素的文件类型: ${extName}`);
         }
 
         return new Promise(((resolve: (value: T|PromiseLike<T>) => void, reject: (reason?: any) => void) => {

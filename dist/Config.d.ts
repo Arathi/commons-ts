@@ -1,8 +1,8 @@
-import Logger from "./Logger";
 export default class Config {
-    logger: Logger;
+    private static instance;
     useLocalStorage: boolean;
     constructor(useLocalStorage?: boolean);
+    static getInstance(): Config;
     /**
      * 获取所有配置项名称
      * @returns 配置项名称数组

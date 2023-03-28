@@ -1,6 +1,4 @@
-import Logger from "./Logger";
 export default class WebSocketClient {
-    logger: Logger;
     url: string;
     connectTimeout: number;
     connected: boolean;

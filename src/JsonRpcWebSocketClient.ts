@@ -3,6 +3,9 @@ import {
     JsonRpcRequest as Request, 
     JsonRpcResponse as Response
 } from "./JsonRpcProtocol";
+import Logger from "./Logger";
+
+let logger = Logger.getLogger("jsonrpc-websocket-client");
 
 export default class JsonRpcWebSocketClient extends WebSocketClient {
     msgIdType: string;
@@ -47,7 +50,7 @@ export default class JsonRpcWebSocketClient extends WebSocketClient {
 
     sendRequest(req: Request) {
         if (req.id == null) {
-            this.logger.warn("无效的JSON-RPC请求报文，缺少id字段: ", req);
+            logger.warn("无效的JSON-RPC请求报文，缺少id字段: ", req);
             return
         }
 
@@ -60,17 +63,17 @@ export default class JsonRpcWebSocketClient extends WebSocketClient {
         // super.onMessage(msgEvent);
         let recvMsg = JSON.parse(msgEvent.data);
         if (recvMsg == null) {
-            this.logger.warn(`接收到来自${msgEvent.origin}的报文，无法转换为JSON对象：${msgEvent.data}`);
+            logger.warn(`接收到来自${msgEvent.origin}的报文，无法转换为JSON对象：${msgEvent.data}`);
             return;
         }
 
         if (recvMsg.jsonrpc == null) {
-            this.logger.warn("报文中未找到jsonrpc字段");
+            logger.warn("报文中未找到jsonrpc字段");
             return;
         }
 
         if (recvMsg.jsonrpc != "2.0") {
-            this.logger.warn("JSON-RPC版本不为2.0");
+            logger.warn("JSON-RPC版本不为2.0");
             return;
         }
 
@@ -84,15 +87,15 @@ export default class JsonRpcWebSocketClient extends WebSocketClient {
             return;
         }
 
-        this.logger.warn("接收到无法处理的报文：", recvMsg);
+        logger.warn("接收到无法处理的报文：", recvMsg);
     }
 
     handleRequest(req: Request) {
-        this.logger.debug(`接收到请求报文：`, req);
+        logger.debug(`接收到请求报文：`, req);
     }
 
     handleResponse(resp: Response) {
-        this.logger.debug(`接收到响应报文：`, resp);
+        logger.debug(`接收到响应报文：`, resp);
         this.responses.set(resp.id!, resp);
     }
 
@@ -105,7 +108,7 @@ export default class JsonRpcWebSocketClient extends WebSocketClient {
             let duration = new Date().valueOf() - startAt;
             if (duration >= this.timeout) {
                 clearInterval(intervalId);
-                this.logger.error("获取响应报文超时");
+                logger.error("获取响应报文超时");
                 reject("获取响应报文超时");
                 return;
             }
@@ -115,12 +118,12 @@ export default class JsonRpcWebSocketClient extends WebSocketClient {
                 
                 let resp = this.responses.get(msgId);
                 if (resp != null && resp.result != null) {
-                    this.logger.debug(`获取到请求${msgId}的响应报文，耗时${duration}ms`);
+                    logger.debug(`获取到请求${msgId}的响应报文，耗时${duration}ms`);
                     extractRespAndResolve(resp);
                     return;
                 }
 
-                this.logger.error("抽取响应报文失败: ", resp);
+                logger.error("抽取响应报文失败: ", resp);
                 reject("抽取响应报文失败");
             }
         }, this.interval);

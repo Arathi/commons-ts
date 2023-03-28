@@ -1,10 +1,27 @@
 export default class Logger {
-    name: string = "ROOT";
+    static readonly Root = "ROOT";
+
+    private static instances: Map<string, Logger> = new Map<string, Logger>();
+
+    name: string = Logger.Root;
 
     constructor(name?: string) {
         if (name != null) {
             this.name = name;
         }
+    }
+
+    public static getLogger(name?: string) {
+        if (name == null) {
+            name = Logger.Root;
+        }
+        let logger = Logger.instances.get(name);
+        if (!logger) {
+            console.info("正在创建logger: " + name);
+            logger = new Logger(name);
+            Logger.instances.set(name, logger);
+        }
+        return logger;
     }
 
     debug(msg: any, ...params: any[]) {

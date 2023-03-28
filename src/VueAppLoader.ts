@@ -23,14 +23,14 @@ let defaultOptions = {
     plugins: []
 } as VueAppLoaderOptions;
 
+let logger = Logger.getLogger("vue-app-loader");
+
 export default class VueAppLoader {
-    logger: Logger;
     injector: DynamicInjector;
     options: VueAppLoaderOptions;
 
     constructor(options: object) {
-        this.logger = new Logger("vue-app-loader");
-        this.injector = new DynamicInjector();
+        this.injector = DynamicInjector.getInstance();
         this.options = { ...defaultOptions, ...options };
     }
     
@@ -64,7 +64,7 @@ export default class VueAppLoader {
                 if (typeof Vue != 'undefined') {
                     // @ts-ignore
                     let vue = Vue;
-                    this.logger.info(`Vue ${vue.version} 加载完成，耗时 ${duration} ms`);
+                    logger.info(`Vue ${vue.version} 加载完成，耗时 ${duration} ms`);
                     return vue;
                 }
                 return null;
@@ -78,7 +78,7 @@ export default class VueAppLoader {
                 if (typeof ElementPlus != 'undefined') {
                     // @ts-ignore
                     let element = ElementPlus;
-                    this.logger.info(`Element Plus ${element.version} 加载完成，耗时 ${duration} ms`);
+                    logger.info(`Element Plus ${element.version} 加载完成，耗时 ${duration} ms`);
                     return element;
                 }
                 return null;
@@ -103,7 +103,7 @@ export default class VueAppLoader {
                 if (key.startsWith("$")) {
                     // @ts-ignore
                     let provide = options.provides[key];
-                    this.logger.info("正在注入provide：%s = ", key, provide);
+                    logger.info("正在注入provide：%s = ", key, provide);
                     app.provide(key, provide);
                 }
             }

@@ -1,5 +1,4 @@
 import { Aria2Client } from "./Aria2Client";
-import Logger from "./Logger";
 export declare class Task {
     id: number | string;
     uri: string;
@@ -19,7 +18,6 @@ export declare class TaskGroup {
     constructor(id: number | string, name: string, dir?: string | null, proxy?: string | null);
 }
 export declare class DownloadManager {
-    logger: Logger;
     aria2: Aria2Client;
     constructor(url: string, token?: string);
     download(group: TaskGroup, task: Task): void;

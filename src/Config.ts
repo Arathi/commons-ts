@@ -1,12 +1,22 @@
 import Logger from "./Logger";
 
+let logger = Logger.getLogger("config");
+
 export default class Config {
-    logger: Logger;
+    private static instance: Config;
+
+    // logger: Logger;
     useLocalStorage: boolean;
 
     constructor(useLocalStorage: boolean = false) {
-        this.logger = new Logger("config");
         this.useLocalStorage = useLocalStorage;
+    }
+
+    public static getInstance() {
+        if (!Config.instance) {
+            Config.instance = new Config();
+        }
+        return Config.instance;
     }
 
     // #region 同步API
@@ -27,7 +37,7 @@ export default class Config {
         }
 
         let keys = GM_listValues();
-        this.logger.debug("获取所有配置项名称: ", keys);
+        logger.debug("获取所有配置项名称: ", keys);
         return keys;
     }
 
@@ -47,7 +57,7 @@ export default class Config {
         }
 
         let v = GM_getValue<V>(key, defaultValue);
-        this.logger.debug("获取配置项%s，结果: ", key, v);
+        logger.debug("获取配置项%s，结果: ", key, v);
         return v;
     }
 
@@ -63,7 +73,7 @@ export default class Config {
             return;
         }
 
-        this.logger.debug("设置配置项%s设置为: ", key, value);
+        logger.debug("设置配置项%s设置为: ", key, value);
         GM_setValue(key, value);
     }
 
@@ -75,11 +85,11 @@ export default class Config {
     initValueIfNotExists(key: string, initValue: any) : void {
         let v: any | null = this.getValue(key, null);
         if (v == null) {
-            this.logger.debug("配置项%s不存在，初始化为: ", key, initValue);
+            logger.debug("配置项%s不存在，初始化为: ", key, initValue);
             this.setValue(key, initValue);
         }
         else {
-            this.logger.debug("配置项%s已存在，值为: ", key, v);
+            logger.debug("配置项%s已存在，值为: ", key, v);
         }
     }
 
@@ -93,7 +103,7 @@ export default class Config {
             return;
         }
 
-        this.logger.debug("删除配置项%s", key);
+        logger.debug("删除配置项%s", key);
         GM_deleteValue(key);
     }
     // #endregion

@@ -42,12 +42,13 @@ export class TaskGroup {
     }
 }
 
+let logger = Logger.getLogger("download-mgr");
+
 export class DownloadManager {
-    logger: Logger;
+    // logger: Logger;
     aria2: Aria2Client;
 
     constructor(url: string, token?: string) {
-        this.logger = new Logger("download-mgr");
         this.aria2 = new Aria2Client({
             url: url,
             msgTypeId: "string",
@@ -80,7 +81,7 @@ export class DownloadManager {
             uris,
             options
         ).then((gid) => {
-            this.logger.info(`下载任务 ${task.id} 已创建，gid为 ${gid}`);
+            logger.info(`下载任务 ${task.id} 已创建，gid为 ${gid}`);
         });
     }
 }
